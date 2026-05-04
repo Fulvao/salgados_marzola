@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salgados Marzola</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* GERAL */
+body{
+    background:#f5f5f5;
+    padding-top:90px;
+    padding-bottom:120px;
+}
+
+/* NAVBAR */
+.navbar{
+    height:80px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 22px;
+    font-style: italic;
+}
+
+.cabeçalho{
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 21px;
+  color: #fff;
+  font-style: italic;
+}
+
+/* CARD */
+.card{
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card img{
+    height:220px;
+    object-fit:cover;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card img:hover{
+    transform:scale(1.05);
+}
+
+/* BOTÕES */
+.btn-opcao{
+    border-radius:10px;
+    font-size:14px;
+}
+
+/* RODAPÉ */
+.rodape{
+    position:fixed;
+    bottom:0;
+    width:100%;
+}
+
+/* MODAL IMAGEM */
+.img-animada{
+    max-width:90%;
+    max-height:75vh;
+    object-fit:contain;
+}
+
+/* ANIMAÇÃO */
+.modal.fade .modal-dialog{
+    transform:scale(0.9);
+    transition:0.3s;
+}
+.modal.show .modal-dialog{
+    transform:scale(1);
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<!--<nav class="navbar navbar-dark bg-primary fixed-top">
+<div class="container">
+<div class="d-flex flex-column">
+<span class="navbar-brand d-flex align-items-center gap-2">
+<img src="logo.png" height="50"> Salgados Marzola
+</span>
+
+<span class="cabeçalho">
+Sabor que conquista, qualidade que fideliza
+</span>
+</div>-->
+<nav class="navbar navbar-dark bg-primary fixed-top">
+  <div class="container d-flex justify-content-between align-items-center">
+
+    <!-- ESQUERDA (logo + nome) -->
+    <span class="navbar-brand d-flex align-items-center gap-2 m-0">
+      <img src="logo.png" height="60">
+      Salgados Marzola
+    </span>
+
+    <!-- DIREITA (frase) -->
+    <span class="cabeçalho m-0">
+      Sabor que conquista, qualidade que fideliza!
+    </span>
+
+  </div>
+</nav>
+
+
+
+<!-- PRODUTOS -->
+<div class="container mt-3">
+<div class="row g-3" id="produtos"></div>
+</div>
+
+<!-- RODAPÉ -->
+<div class="bg-white p-3 shadow rodape">
+<div class="container d-flex justify-content-between">
+<h5>Total: R$ <span id="total">0.00</span></h5>
+<button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalPedido">
+Pedir
+</button>
+</div>
+</div>
+
+<!-- MODAL PEDIDO -->
+<div class="modal fade" id="modalPedido">
+<div class="modal-dialog">
+<div class="modal-content p-3">
+
+<h5>Finalizar Pedido</h5>
+
+<input id="nomeCliente" class="form-control mb-2" placeholder="Nome">
+<input id="telefoneCliente" class="form-control mb-2" placeholder="WhatsApp">
+<input id="enderecoCliente" class="form-control mb-2" placeholder="Endereço">
+
+<input id="distancia" type="number" class="form-control mb-2" placeholder="Distância (km)">
+
+<select id="pagamento" class="form-control mb-2">
+<option value="">Forma de pagamento</option>
+<option value="PIX">PIX</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Cartão">Cartão</option>
+</select>
+
+<input id="troco" class="form-control mb-2" placeholder="Troco (se dinheiro)">
+
+<button class="btn btn-success" onclick="enviarPedido()">Enviar Pedido</button>
+
+</div>
+</div>
+</div>
+
+<!-- MODAL IMAGEM -->
+<div class="modal fade" id="modalImagem">
+<div class="modal-dialog modal-fullscreen modal-dialog-centered">
+<div class="modal-content bg-dark border-0">
+
+<div class="modal-header border-0">
+<h5 class="text-white" id="tituloImagem"></h5>
+<button class="btn btn-light rounded-circle" data-bs-dismiss="modal">✕</button>
+</div>
+
+<div class="modal-body text-center">
+<img id="imgAmpliada" class="img-animada">
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+// PRODUTOS
+let produtos = [
+{nome:"Coxinha Frango", c:80, f:95, img:"imagens/coxinha.jpg"},
+{nome:"Coxinha Carne Seca/Catupiry", c:80, f:95, img:"imagens/coxinha_cs_catu.jpg"},
+{nome:"Kibe", c:120, f:135, img:"imagens/kibe.jpg"},
+{nome:"Bolinha de Queijo", c:80, f:95, img:"imagens/bolinha_queijo.jpg"},
+{nome:"Bolinho de Bacalhau", c:130, f:145, img:"imagens/bolinho_bacalhau.png"},
+{nome:"Croquete", c:100, f:115, img:"imagens/croquete.jpg"},
+{nome:"Risoles Carne", c:80, f:95, img:"imagens/risoles_carne.jpg"},
+{nome:"Risoles Calabresa", c:80, f:95, img:"imagens/risoles_calabresa.jpg"},
+{nome:"Risoles Palmito/Catupiry", c:80, f:95, img:"imagens/risoles_pal_catu.jpg"},
+{nome:"Risoles Presunto/Queijo", c:80, f:95, img:"imagens/risoles_carne.jpg"},
+{nome:"Empada Frango", c:100, f:110, img:"imagens/empada_frango.jpg"},
+{nome:"Empada Palmito", c:120, f:130, img:"imagens/empada_palmito.jpg"},
+
+{nome:"Esfiha de Carne", c:100, f:110, img:"imagens/esfiha_carne.jpg"},
+{nome:"Esfiha de Frango", c:100, f:110, img:"imagens/esfiha_frango.jpg"},
+
+
+
+// TORTAS
+{nome:"Torta de Frango", p:50, g:100, tipoEspecial:true, img:"imagens/torta_frango.jpg"},
+{nome:"Torta de Palmito", p:60, g:120, tipoEspecial:true, img:"imagens/torta_palmito.jpg"},
+{nome:"Torta de Calabresa", p:50, g:100, tipoEspecial:true, img:"imagens/torta_calabresa.jpg"},
+{nome:"Torta de Carne Seca/Catupiry", p:50, g:100, tipoEspecial:true, img:"imagens/torta_cs_catu.jpg"},
+{nome:"Torta de Bacalhau", p:140, g:270, tipoEspecial:true, img:"imagens/torta_bacalhau.jpg"},
+
+];
+
+let carrinho = [];
+let tipoSelecionado = [];
+
+// CARREGAR PRODUTOS
+function carregar(){
+
+let html="";
+
+produtos.forEach((p,i)=>{
+
+let opcoes="";
+
+if(p.tipoEspecial){
+opcoes=`
+<div class="d-flex gap-2 mb-2">
+<button class="btn btn-outline-primary btn-opcao flex-fill" onclick="setTipo(${i},'p',this)">Pequena<br>R$${p.p}</button>
+<button class="btn btn-outline-primary btn-opcao flex-fill" onclick="setTipo(${i},'g',this)">Grande<br>R$${p.g}</button>
+</div>`;
+}else{
+opcoes=`
+<div class="d-flex gap-2 mb-2">
+<button class="btn btn-outline-primary btn-opcao flex-fill" onclick="setTipo(${i},'c',this)">Congelado<br>R$${p.c}</button>
+<button class="btn btn-outline-primary btn-opcao flex-fill" onclick="setTipo(${i},'f',this)">Frito<br>R$${p.f}</button>
+</div>`;
+}
+
+html+=`
+<div class="col-md-4">
+<div class="card">
+
+<img src="${p.img}" onclick="abrirImagem('${p.img}','${p.nome}')">
+
+<div class="card-body">
+<h5>${p.nome}</h5>
+
+${opcoes}
+
+<div class="d-flex justify-content-between">
+<button class="btn btn-danger" onclick="add(${i},-1)">-</button>
+<span id="q${i}">0</span>
+<button class="btn btn-success" onclick="add(${i},1)">+</button>
+</div>
+
+</div>
+</div>
+</div>`;
+
+carrinho[i]=p.tipoEspecial?{p:0,g:0}:{c:0,f:0};
+
+});
+
+document.getElementById("produtos").innerHTML=html;
+}
+
+// SELEÇÃO
+function setTipo(i,tipo,el){
+tipoSelecionado[i]=tipo;
+el.parentNode.querySelectorAll("button").forEach(b=>b.classList.remove("btn-primary"));
+el.classList.add("btn-primary");
+}
+
+// ADD
+function add(i,v){
+
+let tipo=tipoSelecionado[i];
+if(!tipo){alert("Selecione uma opção!");return;}
+
+carrinho[i][tipo]+=v;
+if(carrinho[i][tipo]<0)carrinho[i][tipo]=0;
+
+let totalQtd=0;
+for(let t in carrinho[i]) totalQtd+=carrinho[i][t];
+
+document.getElementById("q"+i).innerText=totalQtd;
+
+calcular();
+}
+
+// TOTAL
+function calcular(){
+
+let total=0;
+
+produtos.forEach((p,i)=>{
+for(let t in carrinho[i]){
+total+=carrinho[i][t]*p[t];
+}
+});
+
+document.getElementById("total").innerText=total.toFixed(2);
+}
+
+// ENTREGA
+function calcularEntrega(d){
+return d<=5?0:(d-5)*2;
+}
+
+// ENVIAR
+function enviarPedido(){
+
+let nome=nomeCliente.value;
+let tel=telefoneCliente.value;
+let end=enderecoCliente.value;
+let dist=parseFloat(distancia.value)||0;
+let pag=pagamento.value;
+let tro=troco.value;
+
+if(!nome||!tel||!end||!pag){
+alert("Preencha tudo!");
+return;
+}
+
+let totalProd=parseFloat(total.innerText);
+let taxa=calcularEntrega(dist);
+let totalFinal=totalProd+taxa;
+
+let msg="🧾 *SALGADOS MARZOLA*%0A%0A";
+
+produtos.forEach((p,i)=>{
+for(let t in carrinho[i]){
+if(carrinho[i][t]>0){
+let nomes={c:"Congelado",f:"Frito",p:"Pequena",g:"Grande"};
+msg+=`${p.nome} (${nomes[t]}): ${carrinho[i][t]}%0A`;
+}
+}
+});
+
+msg+=`%0A👤 ${nome}%0A📞 ${tel}%0A📍 ${end}`;
+msg+=`%0A💳 ${pag}`;
+
+if(pag==="Dinheiro"&&tro){
+msg+=`%0A💰 Troco para: R$ ${tro}`;
+}
+
+if(pag==="PIX"){
+msg+=`%0A🔑 Chave PIX: 11985798474`;
+}
+
+msg+=`%0A🚚 Entrega: R$ ${taxa.toFixed(2)}`;
+msg+=`%0A%0A💵 Total: R$ ${totalFinal.toFixed(2)}`;
+
+window.open("https://wa.me/5511985798474?text="+msg);
+}
+
+// IMAGEM
+function abrirImagem(src,nome){
+imgAmpliada.src=src;
+tituloImagem.innerText=nome;
+bootstrap.Modal.getOrCreateInstance(modalImagem).show();
+}
+
+carregar();
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
